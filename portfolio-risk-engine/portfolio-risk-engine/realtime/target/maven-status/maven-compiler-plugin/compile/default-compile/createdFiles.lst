@@ -1,0 +1,6 @@
+com\riskengine\realtime\MarketTickEvent.class
+com\riskengine\realtime\MarketTickEventFactory.class
+com\riskengine\realtime\RealTimeRiskPipeline.class
+com\riskengine\realtime\KafkaMarketDataConsumer$MarketTickMessage.class
+com\riskengine\realtime\KafkaMarketDataConsumer.class
+com\riskengine\realtime\MarketTickEventHandler.class

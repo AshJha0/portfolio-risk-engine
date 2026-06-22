@@ -1,0 +1,10 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: portfolio-risk-engine-dashboard
+
+# Base URL of the rest-api module the dashboard's frontend JS calls.
+risk-api:
+  base-url: http://localhost:8080

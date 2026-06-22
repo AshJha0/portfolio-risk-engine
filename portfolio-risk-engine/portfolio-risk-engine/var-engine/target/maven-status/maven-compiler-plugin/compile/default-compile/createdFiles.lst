@@ -1,0 +1,6 @@
+com\riskengine\var\historical\HistoricalVaRCalculator.class
+com\riskengine\var\VaRResult.class
+com\riskengine\var\ConfidenceLevel.class
+com\riskengine\var\montecarlo\MonteCarloSimulator.class
+com\riskengine\var\montecarlo\MonteCarloVaREngine.class
+com\riskengine\var\parametric\ParametricVaRCalculator.class

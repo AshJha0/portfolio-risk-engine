@@ -1,0 +1,10 @@
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\controller\RiskController.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\controller\StressTestController.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\dto\PositionDto.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\dto\StressTestRequest.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\dto\StressTestResponse.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\dto\VarRequest.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\dto\VarResponse.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\RiskEngineApiApplication.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\service\RiskCalculationService.java
+C:\work\java\portfolio-risk-engine\portfolio-risk-engine\rest-api\src\main\java\com\riskengine\api\service\StressTestService.java

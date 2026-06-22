@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Risk Engine — Risk Desk</title>
+<style>
+  :root {
+    --bg: #0b0d10;
+    --panel: #12151a;
+    --panel-border: #20252c;
+    --text: #d8dee6;
+    --text-dim: #6b7480;
+    --accent: #ff7a45;
+    --accent-dim: #8a4a2e;
+    --green: #3ddc97;
+    --red: #ff5d5d;
+    --mono: "IBM Plex Mono", "SF Mono", "Consolas", monospace;
+    --sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    padding: 28px 40px 18px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+
+  header .brand {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  header .brand strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  header .timestamp {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  main {
+    padding: 32px 40px 60px;
+    max-width: 1280px;
+    margin: 0 auto;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .toolbar input, .toolbar select {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 4px;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  .toolbar button {
+    background: var(--accent);
+    color: #1a0d05;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 4px;
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: filter 0.15s ease;
+  }
+
+  .toolbar button:hover { filter: brightness(1.08); }
+  .toolbar button:active { filter: brightness(0.92); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 900px) {
+    .grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .metric {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent-dim);
+  }
+
+  .metric.warn::before { background: var(--red); }
+  .metric.ok::before { background: var(--green); }
+
+  .metric .label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .metric .value {
+    font-family: var(--mono);
+    font-size: 26px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .metric .sub {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  section.panel {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 24px 26px;
+    margin-bottom: 24px;
+  }
+
+  section.panel h2 {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 0 0 18px;
+    font-weight: 500;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+
+  table th {
+    text-align: left;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--panel-border);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  table td {
+    padding: 10px 10px;
+    border-bottom: 1px solid #1a1e24;
+  }
+
+  table tr:last-child td { border-bottom: none; }
+
+  .bar-track {
+    background: #1a1e24;
+    border-radius: 3px;
+    height: 6px;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 3px;
+  }
+
+  .pnl-negative { color: var(--red); }
+  .pnl-positive { color: var(--green); }
+
+  .empty-state {
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><strong>RISK</strong>ENGINE / Portfolio Risk Desk</div>
+  <div class="timestamp" id="timestamp">—</div>
+</header>
+
+<main>
+  <div class="toolbar">
+    <input id="apiBase" type="text" value="http://localhost:8080" placeholder="REST API base URL" style="width:220px">
+    <select id="scenarioSelect">
+      <option value="2008 Crisis">2008 Crisis</option>
+      <option value="COVID Crash">COVID Crash</option>
+    </select>
+    <button id="refreshBtn">Run risk calculation</button>
+  </div>
+
+  <div class="grid">
+    <div class="metric" id="metricValue">
+      <div class="label">Portfolio Value</div>
+      <div class="value" id="vPortfolioValue">—</div>
+      <div class="sub">Sample book: AAPL, EURUSD, SPX future</div>
+    </div>
+    <div class="metric" id="metricVar95">
+      <div class="label">95% VaR (Historical)</div>
+      <div class="value" id="vVar95">—</div>
+      <div class="sub">1-day horizon</div>
+    </div>
+    <div class="metric" id="metricVar99">
+      <div class="label">99% VaR (Parametric)</div>
+      <div class="value" id="vVar99">—</div>
+      <div class="sub">Variance-covariance method</div>
+    </div>
+    <div class="metric" id="metricES">
+      <div class="label">Expected Shortfall (99%)</div>
+      <div class="value" id="vES">—</div>
+      <div class="sub">Average loss beyond VaR</div>
+    </div>
+  </div>
+
+  <section class="panel">
+    <h2>VaR by methodology</h2>
+    <table>
+      <thead>
+        <tr><th>Methodology</th><th>Confidence</th><th>VaR</th></tr>
+      </thead>
+      <tbody id="varTableBody">
+        <tr><td colspan="3" class="empty-state">Run a risk calculation to populate this table.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Top risk contributors</h2>
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th>Contribution</th><th></th></tr>
+      </thead>
+      <tbody id="contributorsBody">
+        <tr><td colspan="3" class="empty-state">AAPL 22% · MSFT 18% · EURUSD 12% · TSLA 30% · Others 18% (sample weights)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>Stress test results</h2>
+    <table>
+      <thead>
+        <tr><th>Scenario</th><th>P&amp;L Impact</th></tr>
+      </thead>
+      <tbody id="stressBody">
+        <tr><td colspan="2" class="empty-state">Run a risk calculation to populate this table.</td></tr>
+      </tbody>
+    </table>
+  </section>
+</main>
+
+<footer>Portfolio Risk Engine Dashboard · connects to rest-api module · for internal risk desk use</footer>
+
+<script>
+  const fmt = (n) => {
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    const sign = n < 0 ? "-" : "";
+    return sign + "$" + Math.abs(n).toLocaleString(undefined, { maximumFractionDigits: 0 });
+  };
+
+  function tick() {
+    document.getElementById("timestamp").textContent = new Date().toISOString().replace("T", " ").slice(0, 19) + " UTC";
+  }
+  tick();
+  setInterval(tick, 1000);
+
+  // Sample portfolio used to demonstrate the dashboard end-to-end against the rest-api module.
+  function sampleVarRequest() {
+    return {
+      portfolioName: "Sample Global Macro Book",
+      positions: [
+        { symbol: "AAPL", assetClass: "EQUITY", quantity: 1000, marketPrice: 200.0 },
+        { symbol: "EURUSD", assetClass: "FX", quantity: 1000000, marketPrice: 1.10 }
+      ],
+      marketData: [
+        { symbol: "AAPL", price: 200.0, volatility: 0.02, interestRate: 0.04 },
+        { symbol: "EURUSD", price: 1.10, volatility: 0.008, interestRate: 0.03 }
+      ],
+      historicalPnL: [-420000, -310000, -180000, -90000, 0, 95000, 210000, 305000, 410000],
+      portfolioVolatility: 0.015,
+      monteCarloScenarios: 5000
+    };
+  }
+
+  function sampleStressRequest(scenario) {
+    return {
+      portfolioName: "Sample Global Macro Book",
+      scenario: scenario,
+      positions: [
+        { symbol: "AAPL", assetClass: "EQUITY", quantity: 1000, marketPrice: 200.0 },
+        { symbol: "EURUSD", assetClass: "FX", quantity: 1000000, marketPrice: 1.10 }
+      ]
+    };
+  }
+
+  async function runRiskCalculation() {
+    const base = document.getElementById("apiBase").value.replace(/\/$/, "");
+    const scenario = document.getElementById("scenarioSelect").value;
+
+    try {
+      const varResp = await fetch(base + "/risk/var", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sampleVarRequest())
+      });
+      const varData = await varResp.json();
+
+      const req = sampleVarRequest();
+      const portfolioValue = req.positions.reduce((sum, p) => sum + p.quantity * p.marketPrice, 0);
+
+      document.getElementById("vPortfolioValue").textContent = fmt(portfolioValue);
+      document.getElementById("vVar95").textContent = fmt(varData.historicalVar);
+      document.getElementById("vVar99").textContent = fmt(varData.parametricVar);
+      document.getElementById("vES").textContent = fmt(varData.expectedShortfall);
+
+      document.getElementById("varTableBody").innerHTML = `
+        <tr><td>Historical</td><td>99%</td><td>${fmt(varData.historicalVar)}</td></tr>
+        <tr><td>Parametric</td><td>99%</td><td>${fmt(varData.parametricVar)}</td></tr>
+        <tr><td>Monte Carlo</td><td>99%</td><td>${fmt(varData.monteCarloVar)}</td></tr>
+        <tr><td>Expected Shortfall</td><td>99%</td><td>${fmt(varData.expectedShortfall)}</td></tr>
+      `;
+
+      const stressResp = await fetch(base + "/risk/stress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sampleStressRequest(scenario))
+      });
+      const stressData = await stressResp.json();
+
+      const pnlClass = stressData.loss < 0 ? "pnl-negative" : "pnl-positive";
+      document.getElementById("stressBody").innerHTML = `
+        <tr><td>${stressData.scenario}</td><td class="${pnlClass}">${fmt(stressData.loss)}</td></tr>
+      `;
+    } catch (err) {
+      document.getElementById("varTableBody").innerHTML =
+        `<tr><td colspan="3" class="empty-state">Could not reach API at ${base} — is rest-api running? (${err.message})</td></tr>`;
+    }
+  }
+
+  document.getElementById("refreshBtn").addEventListener("click", runRiskCalculation);
+</script>
+
+</body>
+</html>
